@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+
+    <h2>Admin Panel</h2>
+
+    <p id="auth-status"></p>
+
+    <button onclick="viewUsers()">View All Users</button>
+    <button onclick="viewBlogs()">View All Blogs</button>
+    <button onclick="logout()">Logout</button>
+
+    <hr>
+
+    <div id="result"></div>
+
+    <script>
+        // Retrieve the full user object from localStorage
+        const userString = localStorage.getItem("user");
+        let user = null;
+
+        if (userString) {
+            user = JSON.parse(userString);
+        }
+
+        const authStatus = document.getElementById('auth-status');
+
+        // 1. 🛡️ Initial Security Check and Redirection
+        if (!user || user.role !== "ADMIN") {
+            authStatus.style.color = 'red';
+            authStatus.innerHTML = "🚫 **ACCESS DENIED:** Redirecting to login...";
+            alert("Access Denied: Admin privileges required.");
+            // Wait a moment before redirecting
+            setTimeout(() => { location.href = "login.html"; }, 100); 
+        } else {
+            authStatus.innerHTML = `Welcome, Administrator: <b>${user.username}</b>`;
+        }
+
+        function logout(){
+            localStorage.clear();
+            location.href = "login.html";
+        }
+
+        // ---------------- ADMIN BLOG DELETION ----------------
+        // NOTE: This function is still needed here if you implement direct delete from the table later, 
+        // but we rely on the function in admin_view_blog.html for the primary workflow.
+        function adminDeleteBlog(blogIdToDelete) {
+            if (!confirm(`Confirm deletion of Blog ID ${blogIdToDelete}? This will be permanently removed.`)) return;
+
+            fetch(`http://localhost:8080/admin/blog/delete/${blogIdToDelete}`, {
+                method: 'DELETE',
+                headers: { 'X-Admin-Id': user.id } 
+            })
+            .then(r => r.text())
+            .then(msg => {
+                alert(msg);
+                if (msg.includes("successfully")) {
+                    viewBlogs(); // Refresh the blog list if successful
+                }
+            })
+            .catch(err => {
+                alert('Failed to delete blog.');
+                console.error(err);
+            });
+        }
+        
+        // ---------------- ADMIN USER DELETION ----------------
+        // In admin.html (inside the deleteUser function)
+
+function deleteUser(userIdToDelete) {
+    if (!confirm(`Are you sure you want to permanently delete User ID ${userIdToDelete}?`)) return;
+
+    fetch(`http://localhost:8080/admin/user/delete/${userIdToDelete}`, { // <-- CHECK URL
+        method: 'DELETE',
+        headers: { 'X-Admin-Id': user.id } // <-- CRITICAL: MUST SEND THIS HEADER
+    })
+    .then(r => r.text())
+    .then(msg => {
+        alert(msg);
+        if (msg.includes("successfully")) {
+            viewUsers(); 
+        }
+    })
+    .catch(err => {
+        alert('Failed to delete user.');
+        console.error(err);
+    });
+}
+
+        // ---------------- ADMIN USER ROLE UPDATE ----------------
+
+        function updateRole(userIdToUpdate, newRole) {
+            if (!confirm(`Confirm change User ID ${userIdToUpdate}'s role to ${newRole}?`)) return;
+            
+            fetch(`http://localhost:8080/admin/user/role/${userIdToUpdate}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Admin-Id': user.id 
+                },
+                body: JSON.stringify({ role: newRole })
+            })
+            .then(r => r.text())
+            .then(msg => {
+                alert(msg);
+                if (msg.includes("successfully")) {
+                    viewUsers(); // Refresh the list if successful
+                }
+            })
+            .catch(err => {
+                alert('Failed to update role.');
+                console.error(err);
+            });
+        }
+
+
+        // ---------------- VIEW USERS FUNCTION ----------------
+
+        function viewUsers(){
+            fetch("http://localhost:8080/users")
+            .then(res => res.json())
+            .then(data => {
+                let html = "<h3>All Registered Users:</h3>";
+                html += "<table border='1' style='width:100%; border-collapse: collapse; margin-top:10px;'>";
+                html += "<tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Actions</th></tr>";
+                
+                data.forEach(u => {
+                    const isAdminSelf = (u.id === user.id); 
+
+                    // 1. Delete Button Logic
+                    const deleteBtn = isAdminSelf 
+                        ? `<button disabled title="Cannot delete your own account">Delete</button>`
+                        : `<button onclick="deleteUser(${u.id})" style="background-color: red; color: white; border: none;">Delete</button>`;
+                        
+                    // 2. Role Toggle Logic
+                    const toggleRole = u.role === 'USER' 
+                        ? `<button onclick="updateRole(${u.id}, 'ADMIN')">Make Admin</button>`
+                        : `<button onclick="updateRole(${u.id}, 'USER')" ${isAdminSelf ? 'disabled title="Cannot demote yourself"' : ''}>Demote to User</button>`;
+
+                    html += `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${u.username}</td>
+                            <td>${u.email}</td>
+                            <td><b>${u.role}</b></td>
+                            <td>
+                                ${toggleRole}
+                                ${deleteBtn}
+                            </td>
+                        </tr>`;
+                })
+                
+                html += "</table>";
+                document.getElementById("result").innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById("result").innerHTML = "<p style='color:red;'>Error fetching users. Check server status.</p>";
+                console.error(error);
+            });
+        }
+
+        // ---------------- VIEW BLOGS FUNCTION (FIXED LINK) ----------------
+
+        function viewBlogs(){
+            fetch("http://localhost:8080/blogs")
+            .then(res => res.json())
+            .then(data => {
+                let html = "<h3>All Blogs (Admin View):</h3>";
+                html += "<table border='1' style='width:100%; border-collapse: collapse; margin-top:10px;'>";
+                html += "<tr><th>ID</th><th>Title</th><th>Author</th><th>Date</th><th>Actions</th></tr>";
+
+                data.forEach(b => {
+                    // Button to delete directly from the table (optional, but functional)
+                    const deleteButton = `<button onclick="adminDeleteBlog(${b.id})" style="background-color: red; color: white; border: none;">Delete</button>`;
+                    
+                    // 🟢 CRITICAL FIX: Links to the new admin_view_blog.html page
+                    const blogLink = `<a href="admin_view_blog.html?id=${b.id}" target="_blank">${b.title}</a>`;
+                    
+                    html += `
+                        <tr>
+                            <td>${b.id}</td>
+                            <td>${blogLink}</td>
+                            <td>${b.username}</td>
+                            <td>${b.createdAt ? b.createdAt.substring(0, 10) : 'N/A'}</td>
+                            <td>${deleteButton}</td>
+                        </tr>`;
+                })
+                html += "</table>"; 
+                document.getElementById("result").innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById("result").innerHTML = "<p style='color:red;'>Error fetching blogs. Check server status.</p>";
+                console.error(error);
+            });
+        }
+    </script>
+
+</body>
+</html>

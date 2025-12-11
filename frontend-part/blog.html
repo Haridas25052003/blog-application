@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head><title>Public Blogs</title></head>
+<body>
+<h2>All Blogs</h2>
+
+<a href="index.html">Back to Home</a>
+<hr>
+
+<div id="list"></div>
+
+<script>
+// Function to generate a content preview (Snippet)
+function createSnippet(content, id) {
+    const maxLength = 200;
+    let snippet = content;
+
+    // Remove any newlines/extra spaces for a cleaner snippet
+    const cleanContent = content.replace(/\s+/g, ' ').trim(); 
+
+    if (cleanContent.length > maxLength) {
+        snippet = cleanContent.substring(0, maxLength) + '... ';
+        // Link the snippet to the full view page
+        snippet += `<a href="view.html?id=${id}">[Read Full Blog]</a>`;
+    }
+    return snippet;
+}
+
+fetch("http://localhost:8080/blogs")
+.then(r=>r.json())
+.then(data=>{
+    let html="";
+    data.forEach(b=>{
+        const snippet = createSnippet(b.content, b.id);
+        
+        // Use a flex container to put the image and text side-by-side
+        html+=`
+        <div style="display:flex; align-items:flex-start; margin-bottom: 20px;">
+            
+            ${b.imageUrl ? 
+                `<img src="${b.imageUrl}" alt="${b.title}" 
+                      style="width:120px; height:80px; object-fit: cover; margin-right: 20px; border-radius: 4px;">` 
+                : ''}
+
+            <div style="flex-grow: 1;">
+                <h3><a href="view.html?id=${b.id}" style="text-decoration: none; color: #333;">${b.title}</a></h3>
+                
+                <p>${snippet}</p>
+                <small>Author: ${b.username}</small>
+            </div>
+        </div>
+        <hr>`;
+    });
+    list.innerHTML = html || "No blogs yet";
+});
+</script>
+
+</body>
+</html>

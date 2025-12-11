@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title id="pageTitle">Admin View: Blog Post</title>
+</head>
+<body>
+
+    <div id="controls" style="margin-bottom: 20px;">
+        <button onclick="goToAdminPanel()">← Back to Admin Panel</button>
+        <hr>
+    </div>
+
+    <div id="blog-content">
+        <p>Loading blog details...</p>
+    </div>
+
+    <div id="admin-actions" style="margin-top: 20px;">
+        </div>
+
+    <script>
+        const blogId = new URLSearchParams(location.search).get("id");
+        const userString = localStorage.getItem("user");
+        let user = null;
+        
+        if (userString) {
+            user = JSON.parse(userString);
+        }
+
+        // 1. Initial Check and Navigation
+        function goToAdminPanel() {
+            window.close(); // Close the tab if opened with target="_blank"
+            // If the user navigates directly here, we redirect them back to the panel
+            window.location.href = "admin.html"; 
+        }
+
+        // 2. Load Blog Data
+        if (blogId) {
+            fetch(`http://localhost:8080/blog/${blogId}`)
+                .then(r => {
+                    if (r.status === 404) {
+                        throw new Error("Blog not found.");
+                    }
+                    return r.json();
+                })
+                .then(blog => {
+                    document.getElementById('pageTitle').textContent = blog.title;
+                    displayBlog(blog);
+                    displayAdminControls(blog); // ⬅️ CRITICAL: Show admin buttons
+                })
+                .catch(err => {
+                    document.getElementById('blog-content').innerHTML = `<p style="color:red;">Error loading content: ${err.message}</p>`;
+                });
+        } else {
+            document.getElementById('blog-content').innerHTML = "<p>Invalid Blog ID.</p>";
+        }
+
+        // 3. Display Blog Content (Similar to view.html)
+        function displayBlog(blog) {
+            const container = document.getElementById('blog-content');
+            container.innerHTML = `
+                <h1>${blog.title}</h1>
+                <p>By <b>${blog.username}</b> | Posted on ${blog.createdAt.substring(0, 10)}</p>
+                <img src="${blog.imageUrl}" alt="Blog image" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+                <p>${blog.content.replace(/\n/g, '<br>')}</p>
+            `;
+        }
+
+        // 4. Admin Actions (Delete and Edit)
+        function displayAdminControls(blog) {
+            const actionsDiv = document.getElementById('admin-actions');
+            actionsDiv.innerHTML = `
+                <h3>Admin Actions:</h3>
+                <a href="edit.html?id=${blog.id}" target="_blank">
+                    <button>Edit Blog Content</button>
+                </a>
+                
+                <button onclick="confirmAdminDelete(${blog.id})" style="background-color: red; color: white; border: none; margin-left: 15px;">
+                    ADMIN DELETE
+                </button>
+            `;
+        }
+        
+        // 5. Secure Admin Delete Function (Uses the existing backend endpoint)
+        function confirmAdminDelete(blogIdToDelete) {
+            if (!user || user.role !== 'ADMIN') {
+                alert("Security check failed. Not a verified administrator.");
+                return;
+            }
+
+            if (!confirm(`ADMIN ACTION: Are you sure you want to delete Blog ID ${blogIdToDelete}?`)) return;
+
+            fetch(`http://localhost:8080/admin/blog/delete/${blogIdToDelete}`, {
+                method: 'DELETE',
+                headers: { 'X-Admin-Id': user.id } 
+            })
+            .then(r => r.text())
+            .then(msg => {
+                alert(msg);
+                if (msg.includes("successfully")) {
+                    goToAdminPanel(); // Go back to the admin list after successful deletion
+                }
+            })
+            .catch(err => {
+                alert('Deletion failed.');
+                console.error(err);
+            });
+        }
+
+    </script>
+
+</body>
+</html>

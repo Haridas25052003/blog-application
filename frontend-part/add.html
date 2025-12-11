@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Blog</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+
+<h2>Add Blog</h2>
+
+<input id="title" placeholder="Title"><br><br>
+
+<input type="file" id="imageFile" accept="image/*"><br><br> 
+
+<textarea id="content" placeholder="Write your content here..."></textarea><br><br>
+
+<button onclick="add()">Publish</button>
+<p id="msg"></p>
+
+<a href="myblogs.html">Cancel and Go Back</a>
+
+<script>
+// Global variable to hold the Base64 image data
+let base64Image = "";
+
+// Event listener to convert the file when selected
+document.getElementById('imageFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            // Save the resulting Base64 string
+            base64Image = reader.result;
+            console.log("Image successfully converted to Base64.");
+        }
+        reader.readAsDataURL(file); // Starts the conversion process
+    }
+});
+
+function add(){
+    if (base64Image === "") {
+        document.getElementById("msg").innerText = "Please upload a featured image.";
+        return;
+    }
+    
+    fetch("http://localhost:8080/blog/add",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            title:title.value,
+            // SENDING THE BASE64 STRING AS THE 'imageUrl'
+            imageUrl: base64Image,
+            content:content.value,
+            userId:localStorage.getItem("userId"),
+            username:localStorage.getItem("username")
+        })
+    })
+    .then(r=>r.text())
+    .then(msg=>{
+        document.getElementById("msg").innerText=msg;
+        setTimeout(()=>location.href="myblogs.html",1000);
+    });
+}
+</script>
+
+</body>
+</html>

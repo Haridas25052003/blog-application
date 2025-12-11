@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+
+<h2>Create Account</h2>
+
+<input id="username" placeholder="Username"><br><br>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<button onclick="register()">Register</button>
+
+<p id="msg"></p>
+<br>
+<a href="index.html">Back to Home</a>
+
+<script>
+function register(){
+    fetch("http://localhost:8080/register",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            username:username.value,
+            email:email.value,
+            password:password.value,
+            role:"USER"
+        })
+    })
+    .then(async r=>{
+        const msg = await r.text();
+        document.getElementById("msg").innerText = msg;
+
+        // PROFESSIONAL FLOW IMPROVEMENT: Redirect to login on success
+        if(r.ok){
+            // Assuming a successful 2xx status from the backend
+            document.getElementById("msg").style.color = "green";
+            document.getElementById("msg").innerText = "Registration successful! Redirecting to login...";
+            setTimeout(() => {
+                location.href = "login.html";
+            }, 1500); // Wait 1.5 seconds before redirecting
+        } else {
+            // Display error message from backend
+            document.getElementById("msg").style.color = "red";
+            document.getElementById("msg").innerText = msg;
+        }
+    })
+    .catch(err => {
+        document.getElementById("msg").style.color = "red";
+        document.getElementById("msg").innerText = "Network error or server unavailable.";
+        console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>

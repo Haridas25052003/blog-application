@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head><title>Edit Blog</title></head>
+<body>
+
+<h2>Edit Blog</h2>
+
+<input id="title" placeholder="Title"><br><br>
+<input id="imageUrl" placeholder="Featured Image URL" type="url"><br><br>
+<textarea id="content" placeholder="Content"></textarea><br><br>
+
+<button onclick="save()">Update</button>
+<br>
+<a href="myblogs.html">Cancel and Go Back</a>
+
+<script>
+const id=new URLSearchParams(location.search).get("id");
+
+// FETCH logic updated to display imageUrl
+fetch("http://localhost:8080/blog/"+id)
+.then(r=>r.json())
+.then(b=>{
+    title.value=b.title;
+    imageUrl.value=b.imageUrl || ''; // NEW: Populate the image URL field (use '' if null)
+    content.value=b.content;
+});
+
+function save(){
+fetch("http://localhost:8080/blog/update/"+id,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+title:title.value,
+imageUrl:imageUrl.value, // NEW: Send the updated image URL to the server
+content:content.value,
+// These are included for the server's authorization check (FIXED in App.java)
+id:localStorage.getItem("userId"),
+role:localStorage.getItem("role")
+})
+}).then(()=>location.href="myblogs.html");
+}
+</script>
+
+</body>
+</html>

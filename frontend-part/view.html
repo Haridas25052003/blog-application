@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head><title id="pageTitle">View Blog</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        h2 { color: #333; }
+        #tocContainer { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        #tocList { list-style: none; padding-left: 0; }
+        #tocList li { margin-bottom: 5px; }
+        #authorBio { margin-top: 30px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<a href="myblogs.html">Back to My Blogs</a> | <a href="blog.html">View Public Blogs</a>
+
+<hr>
+
+<h2 id="blogTitle"></h2>
+<p>
+    <small>By: <span id="blogAuthor"></span> | </small>
+    <b><span id="readTime"></span></b>
+</p>
+
+<div id="blogImageContainer" style="margin-bottom: 20px;">
+    </div>
+
+<hr>
+
+<div id="tocContainer">
+    <h3>Table of Contents</h3>
+    <ul id="tocList">
+    </ul>
+    <hr>
+</div>
+
+<div id="blogContent">
+</div>
+
+<hr>
+
+<div id="authorBio">
+    <h4>About the Author: <span id="authorNameFooter"></span></h4>
+    <p><small>This post was written by <span id="authorNameTiny"></span>, a valuable contributor to our blog application. Find more of their insights on the <a href="blog.html">Public Blogs</a> page.</small></p>
+</div>
+
+
+<script>
+// Function to calculate estimated reading time
+function calculateReadingTime(content) {
+    const wordsPerMinute = 200;
+    const wordCount = content.trim().split(/\s+/).length;
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return minutes;
+}
+
+// Get the blog ID from the URL query parameters
+const id = new URLSearchParams(location.search).get("id");
+
+if (!id) {
+    document.body.innerHTML = "<h2>Error: Blog ID not found.</h2>";
+} else {
+    fetch("http://localhost:8080/blog/" + id)
+        .then(r => r.json())
+        .then(b => {
+            document.getElementById("pageTitle").innerText = b.title;
+            document.getElementById("blogTitle").innerText = b.title;
+
+            // 🟢 CRITICAL: DISPLAY THE IMAGE WITH DIMENSION CONTROL
+            if (b.imageUrl) {
+                document.getElementById("blogImageContainer").innerHTML = `
+                    <img src="${b.imageUrl}" alt="${b.title}" 
+                         style="width:100%; 
+                                max-height: 400px; 
+                                object-fit: cover; 
+                                border-radius: 8px;">
+                `;
+            }
+
+            // Populate Author and Reading Time
+            document.getElementById("blogAuthor").innerText = b.username || "Unknown Author";
+            const readingMinutes = calculateReadingTime(b.content);
+            document.getElementById("readTime").innerText = `${readingMinutes} min read`;
+            
+            // Populate Author Bio Footer
+            document.getElementById("authorNameFooter").innerText = b.username || "The Team";
+            document.getElementById("authorNameTiny").innerText = b.username || "our team";
+
+            let content = b.content;
+            let tocHTML = '';
+            let headingCount = 0;
+
+            const lines = content.split('\n');
+            let processedLines = [];
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine.length > 0) {
+                    // TOC Logic: detects short, all-caps, spaced lines as headings
+                    if (trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase() && trimmedLine.indexOf(' ') > -1) {
+                        headingCount++;
+                        const anchorName = `section-${headingCount}`;
+                        
+                        tocHTML += `<li><a href="#${anchorName}">${trimmedLine}</a></li>`;
+                        processedLines.push(`<a name="${anchorName}"></a><h3>${trimmedLine}</h3>`);
+                    } else {
+                        // Treat as a regular paragraph
+                        processedLines.push(`<p>${trimmedLine}</p>`);
+                    }
+                }
+            });
+
+            document.getElementById("blogContent").innerHTML = processedLines.join('');
+
+            document.getElementById("tocList").innerHTML = tocHTML;
+            if (headingCount === 0) {
+                document.getElementById("tocContainer").style.display = 'none'; // Hide if no headings found
+            }
+        })
+        .catch(err => {
+            document.getElementById("blogTitle").innerText = "Error loading blog.";
+            document.getElementById("blogContent").innerText = "Could not fetch blog content.";
+            console.error(err);
+        });
+}
+</script>
+
+</body>
+</html>

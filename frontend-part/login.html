@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+
+<h2>Login</h2>
+
+<form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required /><br><br>
+    <input type="password" id="password" placeholder="Password" required /><br><br>
+    <button type="submit">Login</button>
+</form>
+
+<p id="message" style="color:red;"></p>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    })
+    .then(async res => {
+        if(res.status === 200){
+            const user = await res.json();
+            localStorage.setItem("user", JSON.stringify(user)); // save logged in user
+
+            if(user.role === "ADMIN"){
+                location.href = "admin.html"; // go to admin page
+            } else {
+               // alert("Logged in as regular user");
+                location.href = "myblogs.html"; // regular user page
+            }
+        } else {
+            const err = await res.text();
+            document.getElementById("message").innerText = err;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        document.getElementById("message").innerText = "Server error";
+    });
+});
+</script>
+
+</body>
+</html>

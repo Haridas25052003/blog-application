@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Blogs</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .header-controls { margin-bottom: 20px; }
+        .blog-card {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden; 
+            display: flow-root; 
+        }
+        .blog-card img {
+            float: left; 
+            margin-right: 15px;
+            /* 🖼️ Fixed dimensions for clean thumbnail display */
+            width: 200px; 
+            height: 150px;
+            /* CRITICAL: Ensures the image fills the box and is cropped cleanly */
+            object-fit: cover; 
+            border-radius: 4px;
+        }
+        .blog-card h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #1a73e8;
+        }
+        .blog-card p {
+            color: #555;
+            margin-bottom: 0;
+        }
+        .controls a, .controls button {
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .controls a {
+            background-color: #f0f0f0;
+            color: #333;
+            margin-right: 10px;
+        }
+        .controls button {
+            background-color: #dc3545; /* Red for delete */
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-controls">
+        <h2>📝 My Blog Posts</h2>
+        <a href="add.html">Create New Post</a> | <a href="blog.html">View All Public Blogs</a>
+    </div>
+    
+    <hr/>
+
+    <div id="blogs-container">
+        <p id="loading-msg">Loading your posts...</p>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("You must be logged in to view your blogs.");
+            window.location.href = "login.html"; // Redirect if not logged in
+        }
+
+        fetch(`http://localhost:8080/myblogs/${userId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user blogs.');
+                }
+                return response.json();
+            })
+            .then(blogs => {
+                const container = document.getElementById('blogs-container');
+                container.innerHTML = ''; // Clear loading message
+
+                if (blogs.length === 0) {
+                    container.innerHTML = "<p>You haven't published any blogs yet. <a href='add.html'>Start writing now!</a></p>";
+                    return;
+                }
+                
+                // Show newest blogs first
+                blogs.reverse().forEach(blog => {
+                    const card = document.createElement('div');
+                    card.className = 'blog-card';
+
+                    // 1. IMAGE DISPLAY (Base64)
+                    const img = document.createElement('img');
+                    img.src = blog.imageUrl; 
+                    img.alt = "Featured image for " + blog.title;
+                    card.appendChild(img);
+
+                    // 2. TITLE AND LINK
+                    const title = document.createElement('h3');
+                    const link = document.createElement('a');
+                    link.href = 'view.html?id=' + blog.id;
+                    link.textContent = blog.title;
+                    title.appendChild(link);
+                    card.appendChild(title);
+
+                    // 3. PREVIEW TEXT
+                    const preview = document.createElement('p');
+                    preview.textContent = blog.content.substring(0, 150) + '...';
+                    card.appendChild(preview);
+                    
+                    // 4. EDIT AND DELETE CONTROLS
+                    const controls = document.createElement('div');
+                    controls.className = 'controls';
+                    controls.style.marginTop = '10px';
+
+                    // Edit Button/Link
+                    const editButton = document.createElement('a');
+                    editButton.href = `edit.html?id=${blog.id}`; 
+                    editButton.textContent = 'Edit';
+                    controls.appendChild(editButton);
+
+                    // Delete Button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => deleteBlog(blog.id); 
+                    controls.appendChild(deleteButton);
+
+                    card.appendChild(controls);
+                    container.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching blogs:', error);
+                document.getElementById('blogs-container').innerHTML = "<p>There was an error loading your blog posts. Please check your server connection.</p>";
+            });
+            
+        // --- SECURE DELETE FUNCTION ---
+        function deleteBlog(blogId) {
+            if (!confirm("Are you sure you want to delete this blog? This action cannot be undone.")) {
+                return;
+            }
+            
+            const currentUserId = localStorage.getItem("userId");
+
+            fetch(`http://localhost:8080/blog/delete/${blogId}`, {
+                method: 'DELETE',
+                headers: {
+                    // CRITICAL for backend security check: send the User ID
+                    'X-User-Id': currentUserId 
+                }
+            })
+            .then(r => r.text())
+            .then(msg => {
+                alert(msg);
+                // Reload the list after successful deletion
+                if (msg.includes("successfully")) {
+                    location.reload(); 
+                }
+            })
+            .catch(err => {
+                alert("Deletion failed due to network error.");
+                console.error("Deletion failed:", err)
+            });
+        }
+    </script>
+
+</body>
+</html>
