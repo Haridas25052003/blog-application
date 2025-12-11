@@ -1,5 +1,5 @@
 /* ======================================= */
-/* 0. Global Reset & Variables (Minimalist Light Theme) */
+/* 0. Global Reset & Variables (Deep Space Theme) */
 /* ======================================= */
 * {
     box-sizing: border-box;
@@ -8,184 +8,86 @@
 }
 
 :root {
-    /* Color Palette: Light & Professional */
-    --primary-color: #007bff;   /* Professional Blue (Accent) */
-    --background-light: #f8f9fa; /* Very Light Gray/Off-White */
-    --background-alt: #ffffff;   /* Pure White for Cards/Header */
-    --text-dark: #212529;      /* High-Contrast Black/Dark Gray */
-    --text-faded: #6c757d;      /* Muted gray for details */
-    --border-color: #dee2e6;    /* Light gray border */
+    /* Color Palette: Deep Space */
+    --primary-color: #00e5ff;   /* Icy Blue/Teal (Accent) */
+    --secondary-color: #0d1a2f; /* Deep Midnight Blue (Background) */
+    --background-alt: #1a273b;  /* Dark Card/UI Color */
+    --text-light: #e0f7fa;      /* Off-White/Pale Icy text */
+    --text-faded: #90a4ae;      /* Faded gray/blue for details */
+    --border-color: #37474f;    /* Subtle separation border */
     
     /* Spacing & Roundness */
-    --radius-md: 6px;
+    --radius-lg: 10px;
     --spacing-sm: 10px;
     --spacing-md: 20px;
     --spacing-lg: 40px;
     
     /* Animation */
-    --transition-speed: 0.25s;
+    --transition-speed: 0.3s;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-dark);
-    background-color: var(--background-light);
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-light);
+    background-color: var(--secondary-color);
     line-height: 1.6;
-    overflow-x: hidden !important; /* CRITICAL FIX: Prevent horizontal scroll */
-}
-
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-    transition: color var(--transition-speed);
-}
-a:hover {
-    color: #0056b3;
 }
 
 /* ======================================= */
-/* 1. Global Layout Structure (Header/Footer) */
+/* 1. ANIMATIONS (Continuous Motion & Entrance) */
 /* ======================================= */
 
-/* --- HEADER STYLES --- */
-.app-header {
-    position: fixed; 
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: var(--background-alt);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 1000;
-    
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--spacing-md);
+/* Keyframe for continuous, slow background movement */
+@keyframes background-pan {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
 }
 
-.logo a {
-    font-size: 1.5em;
-    font-weight: 700;
-    color: var(--text-dark);
-}
-
-.nav-links a {
-    margin-left: var(--spacing-md);
-    font-weight: 500;
-    color: var(--text-faded);
-}
-.nav-links a:hover {
-    color: var(--primary-color);
-}
-
-/* --- FOOTER STYLES --- */
-.app-footer {
-    width: 100%;
-    background-color: var(--background-alt);
-    color: var(--text-faded);
-    text-align: center;
-    padding: var(--spacing-sm) 0;
-    border-top: 1px solid var(--border-color);
-    font-size: 0.9em;
+/* Keyframe for content entrance (fade and slight lift) */
+@keyframes content-fade-in {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ======================================= */
-/* 2. Global Components (Buttons/Inputs) */
-/* ======================================= */
-
-/* Base Button Styling */
-.btn {
-    padding: 10px 18px;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all var(--transition-speed);
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
-}
-.btn-standard {
-    background-color: var(--background-alt);
-    color: var(--text-dark);
-    border: 1px solid var(--border-color);
-}
-.btn-secondary {
-    background-color: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-}
-
-/* 💫 Hover Animation: Subtle lift and shadow change */
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 123, 255, 0.25);
-}
-.btn-standard:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-}
-
-/* ======================================= */
-/* 3. Landing Page Styles (index.html) */
+/* 2. Landing Page Styles (index.html) */
 /* ======================================= */
 .landing-page-body {
-    position: relative;
-    /* Use padding-top to push content down and prevent overlap with header */
-    padding-top: 60px; 
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: var(--spacing-lg);
     
-    /* 📸 BLOGGING BACKGROUND IMAGE */
-    background-image: url('https://source.unsplash.com/random/1920x1080/?desk,laptop,typing');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* Parallax effect */
-}
-
-/* Overlay to darken/lighten the background image for text readability */
-.landing-page-body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.85); /* 85% White overlay */
-    z-index: 1;
+    /* Dynamic Background Application */
+    background: linear-gradient(135deg, var(--secondary-color), #05101a, #203550);
+    background-size: 300% 300%; /* Make gradient large */
+    animation: background-pan 30s ease infinite alternate; /* Slow, continuous loop */
 }
 
 .landing-container {
-    position: relative;
-    z-index: 2; /* Ensure container is above the overlay */
     text-align: center;
     padding: var(--spacing-lg);
-    border-radius: var(--radius-md);
-    background-color: var(--background-alt); /* Pure white floating box */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    max-width: 500px;
-    width: 90%;
+    border-radius: var(--radius-lg);
+    background-color: var(--background-alt);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 10px var(--primary-color); /* Deep shadow with subtle glow */
+    max-width: 450px;
+    width: 100%;
     border: 1px solid var(--border-color);
     
     /* Entrance Animation */
-    animation: content-fade-in 1s ease-out forwards;
+    animation: content-fade-in 1.2s ease-out forwards;
 }
 
 .app-title {
     font-size: 3em;
     color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.7); /* Subtle glow */
 }
 
 .tagline {
+    font-size: 1.1em;
     color: var(--text-faded);
     margin-bottom: var(--spacing-lg);
 }
@@ -196,36 +98,47 @@ a:hover {
     gap: var(--spacing-md);
 }
 
-/* ======================================= */
-/* 4. PROFESSIONAL 3D SLIDE/FADE TRANSITION STYLES (Kept from last step) */
-/* ======================================= */
-
-body {
-    perspective: 1200px; 
-    transform-style: preserve-3d;
+/* Base Button Styling (Reused across the app) */
+.btn {
+    padding: 12px 20px;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--transition-speed);
+    text-align: center;
+    text-decoration: none;
+    display: block; /* Ensure buttons take full width */
 }
 
-/* Exit Animation */
-.page-exit {
-    transform-origin: center center; 
-    animation: slide-out 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; 
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--secondary-color); 
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
 }
-@keyframes slide-out {
-    0% { transform: translateZ(0) translateX(0); opacity: 1; }
-    100% { transform: translateZ(-200px) translateX(-100vw); opacity: 0; }
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.btn-standard {
+    background-color: var(--background-alt);
+    color: var(--text-light);
+    border-color: var(--border-color);
 }
 
-/* Enter Animation */
-.page-enter {
-    transform-origin: center center; 
-    animation: slide-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+/* 💫 Hover Animation: Scale, Shadow and Icy Glow */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
 }
-@keyframes slide-in {
-    0% { transform: translateZ(-200px) translateX(100vw); opacity: 0; }
-    100% { transform: translateZ(0) translateX(0); opacity: 1; }
+
+.btn-primary:hover {
+    background-color: #33ffff; 
+    box-shadow: 0 0 20px var(--primary-color); /* Stronger glow */
 }
-/* Keyframe for content entrance (reused) */
-@keyframes content-fade-in {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
+
+.btn-secondary:hover {
+    background-color: rgba(0, 229, 255, 0.1);
 }

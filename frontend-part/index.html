@@ -13,27 +13,11 @@
         <p class="tagline">Your secure platform for sharing knowledge and ideas.</p>
         
         <nav class="landing-nav-card">
-            <a data-href="login.html" class="btn btn-primary nav-link">🔑 Login</a>
-            <a data-href="register.html" class="btn btn-standard nav-link">✍️ Register</a>
-            <a data-href="blog.html" class="btn btn-secondary nav-link">📖 View Public Blogs</a>
+            <a href="login.html" class="btn btn-primary">🔑 Login</a>
+            <a href="register.html" class="btn btn-standard">✍️ Register</a>
+            <a href="blog.html" class="btn btn-secondary">📖 View Public Blogs</a>
         </nav>
     </div>
 
-    <script>
-        // ------------------ ADVANCED 3D TRANSITION LOGIC ------------------
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault(); 
-                
-                const targetUrl = this.getAttribute('data-href');
-                document.body.classList.add('page-exit');
-                
-                // Delay set to 550ms (just under 0.6s animation duration)
-                setTimeout(() => {
-                    window.location.href = targetUrl;
-                }, 550); 
-            });
-        });
-    </script>
 </body>
 </html>
