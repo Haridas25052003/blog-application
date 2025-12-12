@@ -1,144 +1,132 @@
-/* ======================================= */
-/* 0. Global Reset & Variables (Deep Space Theme) */
-/* ======================================= */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* ==================================== */
+/* 1. Global Layout & Background (Clean Minimal) */
+/* ==================================== */
 
 :root {
-    /* Color Palette: Deep Space */
-    --primary-color: #00e5ff;   /* Icy Blue/Teal (Accent) */
-    --secondary-color: #0d1a2f; /* Deep Midnight Blue (Background) */
-    --background-alt: #1a273b;  /* Dark Card/UI Color */
-    --text-light: #e0f7fa;      /* Off-White/Pale Icy text */
-    --text-faded: #90a4ae;      /* Faded gray/blue for details */
-    --border-color: #37474f;    /* Subtle separation border */
-    
-    /* Spacing & Roundness */
-    --radius-lg: 10px;
-    --spacing-sm: 10px;
-    --spacing-md: 20px;
-    --spacing-lg: 40px;
-    
-    /* Animation */
-    --transition-speed: 0.3s;
+    /* Define colors for easy use */
+    --royal-blue: #1A73E8;
+    --purple: #8A2BE2;
+    --sky-blue: #4CC9F0;
+    --text-color: #333;
+    --bg-start: #f6f8fa;
+    --bg-end: #e0e6eb;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --animation-duration: 0.8s;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    color: var(--text-light);
-    background-color: var(--secondary-color);
-    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; /* Center the content */
+    align-items: center;    /* Center the content */
+    
+    /* Soft Gradient Background (Slow Movement Animation) */
+    background: linear-gradient(-45deg, var(--bg-start), var(--bg-end), #c5d0db, #f6f8fa);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
 }
 
-/* ======================================= */
-/* 1. ANIMATIONS (Continuous Motion & Entrance) */
-/* ======================================= */
-
-/* Keyframe for continuous, slow background movement */
-@keyframes background-pan {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-/* Keyframe for content entrance (fade and slight lift) */
-@keyframes content-fade-in {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
+/* ==================================== */
+/* 2. Heading and Subtitle */
+/* ==================================== */
+
+#welcome-container {
+    text-align: center;
+    max-width: 600px;
+    padding: 40px;
 }
 
-/* ======================================= */
-/* 2. Landing Page Styles (index.html) */
-/* ======================================= */
-.landing-page-body {
+#main-heading {
+    font-size: 4.5em; /* Big bold heading */
+    font-weight: 800;
+    color: var(--royal-blue);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.1em;
+    /* Animation: Fade-in + slight slide from top */
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInSlideDown var(--animation-duration) ease-out forwards;
+}
+
+#sub-title {
+    font-size: 1.5em; /* Small subtitle */
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 40px;
+    /* Animation delay for sequence */
+    opacity: 0;
+    animation: fadeInSlideDown var(--animation-duration) ease-out 0.3s forwards;
+}
+
+/* ==================================== */
+/* 3. Button Design & Layout */
+/* ==================================== */
+
+#button-group {
+    /* Horizontal Layout with equal spacing */
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: var(--spacing-lg);
-    
-    /* Dynamic Background Application */
-    background: linear-gradient(135deg, var(--secondary-color), #05101a, #203550);
-    background-size: 300% 300%; /* Make gradient large */
-    animation: background-pan 30s ease infinite alternate; /* Slow, continuous loop */
+    gap: 30px; /* Gap between buttons */
 }
 
-.landing-container {
-    text-align: center;
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    background-color: var(--background-alt);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 10px var(--primary-color); /* Deep shadow with subtle glow */
-    max-width: 450px;
-    width: 100%;
-    border: 1px solid var(--border-color);
-    
-    /* Entrance Animation */
-    animation: content-fade-in 1.2s ease-out forwards;
-}
-
-.app-title {
-    font-size: 3em;
-    color: var(--primary-color);
-    margin-bottom: var(--spacing-sm);
-    text-shadow: 0 0 8px rgba(0, 229, 255, 0.7); /* Subtle glow */
-}
-
-.tagline {
-    font-size: 1.1em;
-    color: var(--text-faded);
-    margin-bottom: var(--spacing-lg);
-}
-
-.landing-nav-card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-/* Base Button Styling (Reused across the app) */
-.btn {
-    padding: 12px 20px;
-    border-radius: var(--radius-lg);
-    font-weight: 700;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all var(--transition-speed);
-    text-align: center;
+.neo-button {
+    /* Button Style Commands */
     text-decoration: none;
-    display: block; /* Ensure buttons take full width */
+    padding: 12px 30px; /* Medium padding */
+    border-radius: 30px; /* Rounded corners (30px) */
+    font-weight: bold; /* Bold text */
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth animation (0.3s) */
+    box-shadow: 0 4px 6px var(--shadow-color); /* Shadow below button */
+    
+    /* Animation: Fade-in + slide from bottom */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSlideUp var(--animation-duration) ease-out 0.6s forwards; 
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
-    color: var(--secondary-color); 
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+/* Button Colors */
+.blue-btn { background-color: var(--royal-blue); }
+.purple-btn { 
+    background-color: var(--purple); 
+    animation-delay: 0.8s; /* Stagger animation */
 }
-.btn-secondary {
-    background-color: transparent;
-    color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-.btn-standard {
-    background-color: var(--background-alt);
-    color: var(--text-light);
-    border-color: var(--border-color);
+.sky-btn { 
+    background-color: var(--sky-blue); 
+    animation-delay: 1.0s; /* Stagger animation */
 }
 
-/* 💫 Hover Animation: Scale, Shadow and Icy Glow */
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+/* On Hover: Button lifts 4-6px, Shadow increases softly */
+.neo-button:hover {
+    transform: translateY(-5px); /* Slight hover lift */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3); /* Shadow increases softly */
 }
 
-.btn-primary:hover {
-    background-color: #33ffff; 
-    box-shadow: 0 0 20px var(--primary-color); /* Stronger glow */
+/* ==================================== */
+/* 4. Animation Keyframes */
+/* ==================================== */
+
+@keyframes fadeInSlideDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.btn-secondary:hover {
-    background-color: rgba(0, 229, 255, 0.1);
+@keyframes fadeInSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

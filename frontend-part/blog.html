@@ -1,57 +1,90 @@
 <!DOCTYPE html>
 <html>
-<head><title>Public Blogs</title></head>
+<head>
+    <title>Public Blogs</title>
+    <link rel="stylesheet" href="blog.css"> <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 <body>
-<h2>All Blogs</h2>
 
-<a href="index.html">Back to Home</a>
-<hr>
+<header id="site-header">
+    <div class="header-content">
+        <h1 class="site-title">WriteFlow<span class="logo-accent">.</span></h1>
+    </div>
+</header>
 
-<div id="list"></div>
+<div class="page-container">
+    <div class="header-bar">
+        <a href="index.html" class="nav-btn primary-btn"><i class="fas fa-home"></i> Back to Home</a>
+        
+        <div class="controls-bar">
+            <input type="text" id="search" placeholder="Search blogs..." class="search-input">
+            <button class="sort-btn"><i class="fas fa-sort-amount-down"></i> Newest</button>
+        </div>
+    </div>
+    
+    <div id="list" class="blog-grid">
+        </div>
+    
+    <p id="message" class="loading-message">Loading blogs...</p>
+</div>
 
 <script>
-// Function to generate a content preview (Snippet)
+// Function to generate a content preview (Snippet) - UNCHANGED LOGIC
 function createSnippet(content, id) {
-    const maxLength = 200;
+    const maxLength = 160; 
     let snippet = content;
 
-    // Remove any newlines/extra spaces for a cleaner snippet
     const cleanContent = content.replace(/\s+/g, ' ').trim(); 
 
     if (cleanContent.length > maxLength) {
         snippet = cleanContent.substring(0, maxLength) + '... ';
-        // Link the snippet to the full view page
-        snippet += `<a href="view.html?id=${id}">[Read Full Blog]</a>`;
     }
     return snippet;
 }
 
 fetch("http://localhost:8080/blogs")
-.then(r=>r.json())
-.then(data=>{
-    let html="";
-    data.forEach(b=>{
-        const snippet = createSnippet(b.content, b.id);
-        
-        // Use a flex container to put the image and text side-by-side
-        html+=`
-        <div style="display:flex; align-items:flex-start; margin-bottom: 20px;">
-            
-            ${b.imageUrl ? 
-                `<img src="${b.imageUrl}" alt="${b.title}" 
-                      style="width:120px; height:80px; object-fit: cover; margin-right: 20px; border-radius: 4px;">` 
-                : ''}
+.then(r => r.json())
+.then(data => {
+    let html = "";
+    
+    // Clear initial loading message
+    document.getElementById("message").style.display = 'none';
 
-            <div style="flex-grow: 1;">
-                <h3><a href="view.html?id=${b.id}" style="text-decoration: none; color: #333;">${b.title}</a></h3>
+    if (data && data.length > 0) {
+        data.forEach(b => {
+            const snippet = createSnippet(b.content, b.id);
+            const imageUrl = b.imageUrl || 'placeholder.jpg'; // Use a placeholder if no image
+            
+            // 1. Each blog as a Card
+            html += `
+            <div class="blog-card" onclick="location.href='view.html?id=${b.id}'">
                 
-                <p>${snippet}</p>
-                <small>Author: ${b.username}</small>
-            </div>
-        </div>
-        <hr>`;
-    });
-    list.innerHTML = html || "No blogs yet";
+                <div class="image-wrapper">
+                    <img src="${imageUrl}" alt="${b.title}" class="card-image">
+                    <div class="image-overlay"></div>
+                </div>
+
+                <div class="card-content">
+                    <h3 class="blog-title"><a href="view.html?id=${b.id}">${b.title}</a></h3>
+                    
+                    <p class="blog-snippet">${snippet}</p>
+                    
+                    <small class="author-info">
+                        <i class="fas fa-user-edit"></i> By: <span class="author-name">${b.username}</span>
+                    </small>
+
+                    <a href="view.html?id=${b.id}" class="read-more-btn">
+                        <i class="fas fa-arrow-right"></i> Read Full Blog
+                    </a>
+                </div>
+            </div>`;
+        });
+        list.innerHTML = html;
+    } else {
+        document.getElementById("message").innerText = "No blogs published yet.";
+        document.getElementById("message").style.display = 'block';
+    }
 });
 </script>
 

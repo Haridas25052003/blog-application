@@ -1,43 +1,159 @@
 <!DOCTYPE html>
 <html>
-<head><title>Edit Blog</title></head>
+<head>
+    <title>Edit Blog</title>
+    <link rel="stylesheet" href="edit.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
 <body>
 
-<h2>Edit Blog</h2>
+<div id="page-wrapper">
+    
+    <h1 id="page-title">🌟 WriteFlow – Edit Blog</h1> 
 
-<input id="title" placeholder="Title"><br><br>
-<input id="imageUrl" placeholder="Featured Image URL" type="url"><br><br>
-<textarea id="content" placeholder="Content"></textarea><br><br>
+    <div id="blog-card">
+        
+        <h2 class="card-header">Edit Your Existing Blog Post</h2>
+        
+        <div class="form-grid">
+            
+            <div class="main-content-section">
+                
+                <input id="title" placeholder="Blog Title (Max 80 characters)">
+                
+                <textarea id="content" placeholder="Write your content here..."></textarea>
+                
+                <div class="actions-footer">
+                    <button onclick="save()" class="update-btn">
+                        <i class="fas fa-check-circle"></i> Update Blog
+                    </button>
 
-<button onclick="save()">Update</button>
-<br>
-<a href="myblogs.html">Cancel and Go Back</a>
+                    <a href="myblogs.html" class="cancel-link">
+                        <i class="fas fa-arrow-left"></i> Cancel and Go Back
+                    </a>
+                </div>
+            </div>
+
+            <div class="image-upload-section">
+                <label for="imageFile" class="image-upload-box" id="upload-area">
+                    <div id="upload-box-placeholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to replace image or drag & drop</p>
+                        <p class="recommended-size">1200 × 800 recommended</p>
+                        <p class="current-image-status">Current Image Loaded</p>
+                    </div>
+                    
+                    <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                    
+                    <img id="image-preview" src="#" alt="Image Preview" style="display: none;">
+                </label>
+                
+                <p id="msg" class="validation-msg"></p>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-const id=new URLSearchParams(location.search).get("id");
+// Global variables to manage the image update flow
+let base64Image = ""; // Holds the new Base64 string if a new file is chosen
+let initialImageUrl = ""; // Holds the existing URL fetched from the server
 
-// FETCH logic updated to display imageUrl
-fetch("http://localhost:8080/blog/"+id)
-.then(r=>r.json())
-.then(b=>{
-    title.value=b.title;
-    imageUrl.value=b.imageUrl || ''; // NEW: Populate the image URL field (use '' if null)
-    content.value=b.content;
+const id = new URLSearchParams(location.search).get("id");
+const msgElement = document.getElementById("msg");
+
+// --- INITIAL FETCH TO POPULATE FIELDS AND IMAGE PREVIEW ---
+fetch("http://localhost:8080/blog/" + id)
+.then(r => r.json())
+.then(b => {
+    title.value = b.title;
+    content.value = b.content;
+
+    // 3. Show current image in preview
+    if (b.imageUrl) {
+        initialImageUrl = b.imageUrl;
+        const previewImg = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-box-placeholder');
+        
+        previewImg.src = initialImageUrl;
+        previewImg.style.display = 'block';
+        placeholder.style.display = 'none'; 
+    }
 });
 
+// --- FILE UPLOAD LISTENER (Base64 Conversion) ---
+document.getElementById('imageFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewImg = document.getElementById('image-preview');
+    const placeholder = document.getElementById('upload-box-placeholder');
+    
+    if (file) {
+        msgElement.innerText = ""; // Clear previous error
+        
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            // New image chosen: overwrite base64Image
+            base64Image = reader.result;
+            // Update preview
+            previewImg.src = base64Image;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none'; 
+            console.log("New image successfully converted to Base64.");
+        }
+        reader.readAsDataURL(file); // Starts the conversion process
+    } else {
+        // Reset if selection is canceled, but keep initial image if present
+        base64Image = "";
+        if (!initialImageUrl) {
+            previewImg.style.display = 'none';
+            placeholder.style.display = 'flex';
+        }
+    }
+});
+
+// --- SAVE (UPDATE) FUNCTION ---
 function save(){
-fetch("http://localhost:8080/blog/update/"+id,{
-method:"PUT",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-title:title.value,
-imageUrl:imageUrl.value, // NEW: Send the updated image URL to the server
-content:content.value,
-// These are included for the server's authorization check (FIXED in App.java)
-id:localStorage.getItem("userId"),
-role:localStorage.getItem("role")
-})
-}).then(()=>location.href="myblogs.html");
+    // 5. Validation
+    if (title.value.trim() === "" || content.value.trim() === "") {
+        msgElement.innerText = "Title and Content cannot be empty.";
+        msgElement.style.color = "var(--danger-color)";
+        return;
+    }
+
+    // Determine the final image URL: (New Base64) OR (Existing URL)
+    const finalImageUrl = base64Image || initialImageUrl;
+
+    if (finalImageUrl === "") {
+        msgElement.innerText = "Please upload a featured image.";
+        msgElement.style.color = "var(--danger-color)";
+        return;
+    }
+
+    fetch("http://localhost:8080/blog/update/"+id,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            title:title.value,
+            // Send the new Base64 or the old URL
+            imageUrl: finalImageUrl, 
+            content:content.value,
+            userId:localStorage.getItem("userId"),
+            username:localStorage.getItem("username")
+        })
+    })
+    .then(r => r.text())
+    .then(responseMsg => {
+        // 5. Validation & Feedback
+        if (responseMsg.toLowerCase().includes("success")) {
+             msgElement.style.color = "var(--primary-color)";
+             msgElement.innerText = "Update successful! Redirecting...";
+             setTimeout(()=>location.href="myblogs.html",1000);
+        } else {
+             msgElement.style.color = "var(--danger-color)";
+             msgElement.innerText = responseMsg || "Update failed.";
+        }
+    });
 }
 </script>
 

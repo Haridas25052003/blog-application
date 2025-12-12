@@ -1,0 +1,312 @@
+/* ==================================== */
+/* GLOBAL STYLES & Variables */
+/* ==================================== */
+:root {
+    --primary-color: #1A73E8; /* Royal Blue */
+    --accent-color: #4CC9F0; /* Sky Blue */
+    --danger-color: #E74C3C; /* Red */
+    --gradient-start: #6a5af9; /* Deep Purple */
+    --gradient-end: #3fb4ff; /* Sky Blue */
+    --soft-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    --border-radius: 25px; /* 2. Rounded corners (25-30px) */
+    --input-bg: rgba(255, 255, 255, 0.8);
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    /* Consistent Background Gradient */
+    background: linear-gradient(135deg, #f5f7fa, #e8ebf3);
+}
+
+#page-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    animation: fadeIn 0.8s ease-out; /* 6. Fade-in form and image */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ==================================== */
+/* 1. Page Header (Site Branding) */
+/* ==================================== */
+#page-title {
+    font-size: 2.8em; 
+    font-weight: 900;
+    color: #333; 
+    text-align: center;
+    margin-bottom: 30px; 
+    position: relative;
+    transform: translateY(-20px);
+    animation: fadeInSlideDown 0.8s ease-out forwards;
+}
+
+#page-title::after {
+    content: '';
+    display: block;
+    width: 150px;
+    height: 4px;
+    margin: 10px auto 0;
+    /* Gradient effect */
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end)); 
+    border-radius: 2px;
+}
+
+@keyframes fadeInSlideDown {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================================== */
+/* 2. Glass Card Layout */
+/* ==================================== */
+#blog-card {
+    width: 900px; /* Consistent width (900px) */
+    max-width: 100%;
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(10px); /* Glass effect / blur */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius); 
+    box-shadow: var(--glass-shadow); /* Soft shadow */
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all var(--transition-speed) ease;
+    animation: cardFadeIn 0.6s ease-out 0.2s forwards;
+}
+
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 6. Slight hover lift */
+#blog-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    font-size: 1.8em;
+    font-weight: 900;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+/* ==================================== */
+/* 3. Form Layout (Two-Column Grid) */
+/* ==================================== */
+.form-grid {
+    display: flex;
+    gap: 30px;
+}
+
+.main-content-section {
+    flex: 2; /* Left side */
+    display: flex;
+    flex-direction: column;
+}
+
+.image-upload-section {
+    flex: 1; /* Right side */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ==================================== */
+/* Form Field Styling (Consistent) */
+/* ==================================== */
+
+#title, #content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: var(--input-bg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all var(--transition-speed) ease;
+    font-size: 1em;
+    color: #333;
+}
+
+#content {
+    resize: vertical;
+    min-height: 300px; 
+}
+
+/* Smooth focus glow */
+#title:focus, #content:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2); 
+    outline: none;
+    background-color: white;
+}
+
+/* ==================================== */
+/* 3. Image Upload UI */
+/* ==================================== */
+
+.image-upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 200px; 
+    border: 3px dashed var(--accent-color);
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all var(--transition-speed) ease;
+}
+
+.image-upload-box:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+#upload-box-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity var(--transition-speed);
+}
+
+#upload-box-placeholder i {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.recommended-size, .current-image-status {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+}
+
+/* 6. Soft image zoom on hover */
+#image-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: transform 0.4s ease;
+}
+
+#image-preview:hover {
+    transform: scale(1.05);
+}
+
+/* 5. Validation Message */
+.validation-msg {
+    font-size: 0.9em;
+    color: var(--danger-color);
+    margin-top: -10px;
+    padding-left: 5px;
+    height: 20px; /* Reserve space */
+}
+
+/* ==================================== */
+/* 4. Buttons */
+/* ==================================== */
+
+.actions-footer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+/* Update button: gradient primary style */
+.update-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    
+    background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end)); /* blue/purple gradient */
+    box-shadow: 0 5px 15px rgba(106, 90, 249, 0.3);
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Hover animations on buttons */
+.update-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(63, 180, 255, 0.5);
+    background: linear-gradient(45deg, var(--gradient-end), var(--gradient-start));
+}
+
+/* Cancel button: gray text with icon */
+.cancel-link {
+    text-decoration: none;
+    color: #888; 
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: color var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cancel-link:hover {
+    color: var(--danger-color);
+}
+
+/* ==================================== */
+/* 7. Responsive Design */
+/* ==================================== */
+
+@media (max-width: 950px) {
+    #blog-card {
+        padding: 30px;
+    }
+    .form-grid {
+        flex-direction: column; /* Mobile-friendly stacking */
+    }
+    /* Image on top of form on small screens */
+    .main-content-section {
+        order: 2; 
+    }
+    .image-upload-section {
+        order: 1;
+    }
+    .actions-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .update-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

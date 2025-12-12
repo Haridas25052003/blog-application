@@ -1,0 +1,523 @@
+/* ==================================== */
+/* General & Typography */
+/* ==================================== */
+:root {
+    --primary-color: #1A73E8; 
+    --secondary-color: #8A2BE2; 
+    --accent-color: #4CC9F0; 
+    --danger-color: #E74C3C; 
+    --bg-color: #f4f7f6; 
+    --card-bg: rgba(255, 255, 255, 0.85); /* 6. Glassmorphism */
+    --text-color: #333;
+    --light-text: #666;
+    --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+
+    /* Dark Mode Variables */
+    --dark-bg: #1e1e1e;
+    --dark-card-bg: rgba(45, 45, 45, 0.85);
+    --dark-text: #f0f0f0;
+    --dark-light-text: #aaa;
+}
+
+body {
+    font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s;
+}
+
+/* 10. Dark Mode Styling */
+body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+body.dark-mode .dashboard-title { color: var(--accent-color); }
+body.dark-mode .blog-card { 
+    background-color: var(--dark-card-bg); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+body.dark-mode .blog-card h3 a { color: var(--dark-text); }
+body.dark-mode .blog-description, body.dark-mode .blog-metadata { color: var(--dark-light-text); }
+body.dark-mode .secondary-btn { 
+    background-color: transparent;
+    color: var(--dark-text);
+    border-color: var(--dark-light-text);
+}
+body.dark-mode .secondary-btn:hover { background-color: var(--primary-color); }
+body.dark-mode .filter-controls .search-box input {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+}
+
+
+.page-wrapper {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ==================================== */
+/* 10. Light/Dark Mode Toggle */
+/* ==================================== */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+/* ==================================== */
+/* Header & Controls */
+/* ==================================== */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.dashboard-title {
+    font-size: 2.2em;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+/* ==================================== */
+/* 7. Sticky Category Bar */
+/* ==================================== */
+.category-bar-wrapper {
+    margin: 20px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+}
+
+.category-bar {
+    display: flex;
+    gap: 10px;
+    padding: 5px 0;
+}
+
+.category-link {
+    text-decoration: none;
+    color: var(--light-text);
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: #e0e0e0;
+    font-size: 0.9em;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.category-link:hover, .category-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+}
+
+/* ==================================== */
+/* 2. Search + Filter Options */
+/* ==================================== */
+.filter-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    align-items: center;
+    flex-wrap: wrap; /* allows wrapping */
+    justify-content: space-between; /* spreads items evenly */
+}
+
+.search-box {
+    position: relative;
+    flex: 1 1 auto; /* flexible width */
+    min-width: 200px; /* don’t shrink below this */
+    max-width: 70%; /* occupy max 70% of row */
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-text);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(26, 115, 232, 0.3);
+    outline: none;
+}
+
+.filter-select {
+    flex: 0 0 150px; /* fixed width */
+    max-width: 150px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+/* Spacing when wrapped */
+.filter-controls > * {
+    margin-bottom: 10px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-box, .filter-select {
+        max-width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
+
+/* ==================================== */
+/* 1. Skeleton Loading Shimmer */
+/* ==================================== */
+.skeleton-card {
+    background-color: #ddd;
+    border-radius: var(--border-radius);
+    height: 450px; 
+    position: relative;
+    overflow: hidden;
+    /* Shimmer Effect */
+    background: linear-gradient(to right, #ddd 0%, #eee 20%, #ddd 40%, #ddd 100%);
+    background-size: 800px 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+    0% { background-position: -800px 0; }
+    100% { background-position: 800px 0; }
+}
+
+/* ==================================== */
+/* 5. Micro-animations & 6. Glass Card */
+/* ==================================== */
+#blogs-grid {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 1fr); 
+}
+
+.blog-card {
+    /* 6. Glassmorphism */
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    border-radius: var(--border-radius); 
+    box-shadow: var(--shadow-soft); 
+    overflow: hidden;
+    display: flex; 
+    flex-direction: column;
+    
+    /* 5. Card rise animation on hover */
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease; 
+    min-height: 450px; 
+
+    /* 5. Fade-in animation when page loads */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInSlideUp 0.6s forwards;
+}
+
+@keyframes fadeInSlideUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.blog-card:hover {
+    transform: translateY(-8px); /* 5. Card rise animation */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 5. Slow zoom-in for images */
+.card-image-zoom {
+    width: 100%;
+    height: 180px; 
+    object-fit: cover; 
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    transition: transform 2.5s ease;
+}
+
+.blog-card:hover .card-image-zoom {
+    transform: scale(1.05);
+}
+
+/* ==================================== */
+/* 3. Category Badges (Gradient) & 4. Author Section */
+/* ==================================== */
+
+.card-content-wrapper {
+    padding: 15px 20px;
+    flex-grow: 1; 
+}
+
+.blog-metadata {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.9em;
+    color: var(--light-text);
+    margin-bottom: 15px;
+    gap: 8px; /* Space between meta elements */
+}
+
+/* 3. Category Badge Style */
+.blog-metadata .tag {
+    background: var(--secondary-color);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(138, 43, 226, 0.3);
+    transition: background 0.3s;
+}
+
+/* Gradient Colors for Tags */
+.tag-technology { background: linear-gradient(45deg, #1A73E8, #4CC9F0); }
+.tag-motivation { background: linear-gradient(45deg, #8A2BE2, #C77DFF); }
+.tag-tutorials { background: linear-gradient(45deg, #00b09b, #96c93d); }
+.tag-draft { background: #bbb; }
+
+.meta-separator {
+    color: #ccc;
+    font-size: 0.8em;
+}
+
+/* 9. View Count & Other Metadata */
+.blog-metadata i {
+    margin-right: 4px;
+    color: var(--primary-color);
+}
+body.dark-mode .blog-metadata i { color: var(--accent-color); }
+
+/* Typography */
+.blog-card h3 {
+    font-size: 1.3em;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.blog-card h3 a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.blog-card h3 a:hover {
+    color: var(--primary-color);
+}
+
+.blog-description {
+    font-size: 0.95em;
+    color: var(--light-text);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.read-more-link {
+    display: block;
+    margin-top: 10px;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9em;
+    transition: color 0.2s;
+}
+
+.read-more-link:hover {
+    color: var(--primary-color);
+}
+
+/* ==================================== */
+/* Controls Footer (Button Glow) */
+/* ==================================== */
+
+.controls-footer {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: auto; 
+}
+
+.control-btn {
+    padding: 8px 15px;
+    border-radius: 20px; 
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease; /* 5. Smooth transition */
+    text-decoration: none;
+    border: none;
+}
+
+/* Edit Button (Soft Color) */
+.edit-btn {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #38b3d6;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 201, 240, 0.5); /* 5. Button glow effect */
+}
+
+/* Delete Button (Red) */
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5); /* 5. Button glow effect */
+}
+
+/* ==================================== */
+/* 8. Pagination */
+/* ==================================== */
+.pagination-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+    gap: 10px;
+}
+
+.pagination-btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    color: var(--text-color);
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(.disabled) {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.pagination-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-number {
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--light-text);
+    cursor: pointer;
+}
+
+.page-number.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+}
+
+/* Responsive Grid Adjustments */
+@media (max-width: 1024px) {
+    #blogs-grid { grid-template-columns: repeat(2, 1fr); }
+    .filter-controls { flex-wrap: wrap; }
+    .search-box { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+    #blogs-grid { grid-template-columns: 1fr; }
+    .dashboard-header { flex-direction: column; align-items: flex-start; }
+    .header-controls { margin-top: 15px; width: 100%; justify-content: space-around; }
+    .action-btn { flex-grow: 1; text-align: center; }
+}
+/* ==================================== */
+/* Header & Controls Button Updates */
+/* ==================================== */
+
+/* Base button styling: Slightly larger size & rounded-pill shape */
+.action-btn {
+    text-decoration: none;
+    padding: 12px 25px; /* Slightly larger size */
+    border-radius: 30px; /* Rounded-pill shape */
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: inline-flex; /* For icon alignment */
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    font-size: 1.05em; /* Slightly larger text */
+}
+
+/* Primary (Create) Button: Premium Gradient + Soft Glow */
+.primary-btn {
+    /* Premium gradient background: (45deg, #6a5af9 → #3fb4ff) */
+    background: linear-gradient(45deg, #6a5af9, #3fb4ff); 
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(106, 90, 249, 0.4); /* Initial soft shadow */
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    /* Soft Glow on Hover */
+    box-shadow: 0 8px 25px rgba(63, 180, 255, 0.7); 
+    /* Subtle gradient shift on hover for movement effect */
+    background: linear-gradient(45deg, #3fb4ff, #6a5af9);
+}
+
+/* Secondary (View Public Feed) Button: Complementary Style */
+.secondary-btn {
+    background-color: transparent; /* Transparent background */
+    color: #6a5af9; /* Color derived from the primary gradient start */
+    border: 2px solid #6a5af9; /* Solid border */
+}
+
+.secondary-btn:hover {
+    /* Fill with primary gradient color on hover */
+    background: #6a5af9; 
+    color: white;
+    border-color: #6a5af9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(106, 90, 249, 0.4);
+}

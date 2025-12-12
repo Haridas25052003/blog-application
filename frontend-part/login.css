@@ -1,0 +1,248 @@
+/* ==================================== */
+/* 1. Page Layout & Background (NeoGlass Gradient) */
+/* ==================================== */
+:root {
+    --royal-blue: #1A73E8;
+    --purple: #8A2BE2;
+    --soft-purple: #C77DFF;
+    --bg-start: #f6f8fa;
+    --bg-end: #e0e6eb;
+    --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide floating shape overflow */
+    
+    /* NeoGlass Gradient Background */
+    background: linear-gradient(-45deg, var(--bg-start), var(--bg-end), #c5d0db, #f6f8fa);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite; /* Slow moving gradient */
+}
+
+/* Floating soft shapes (blur circles) */
+#page-container::before, #page-container::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px); /* Soft blur */
+    opacity: 0.7;
+    z-index: -1;
+}
+
+#page-container::before {
+    background: var(--royal-blue);
+    width: 200px;
+    height: 200px;
+    top: 10%;
+    left: 10%;
+    animation: floatShape 12s ease-in-out infinite alternate;
+}
+
+#page-container::after {
+    background: var(--purple);
+    width: 300px;
+    height: 300px;
+    bottom: 5%;
+    right: 5%;
+    animation: floatShape 10s ease-in-out infinite reverse;
+}
+
+/* ==================================== */
+/* 2. Login Card (Glassmorphism) */
+/* ==================================== */
+
+#login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    text-align: center;
+    
+    /* Glassmorphism Styles */
+    background: rgba(255, 255, 255, 0.25); /* Transparent white background (25%) */
+    border-radius: 30px; /* Rounded corners */
+    box-shadow: var(--shadow-light); /* Subtle outer shadow */
+    backdrop-filter: blur(10px); /* Blur effect behind card */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.18); /* Thin border (low opacity white) */
+    color: #333;
+
+    /* Animation: slide + fade up */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardEntry 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ==================================== */
+/* 3. Header / Branding */
+/* ==================================== */
+
+#card-header {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--royal-blue);
+    margin-bottom: 5px;
+    /* Fade-in from top */
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: fadeInSlideDown 0.5s ease-out 0.8s forwards;
+}
+
+#card-subtitle {
+    font-size: 1em;
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeInSlideDown 0.5s ease-out 1.0s forwards;
+}
+
+/* Ensure original error message is visible */
+#message {
+    font-size: 0.9em;
+    margin-bottom: 20px;
+    /* color: red; is already inline */
+}
+
+/* ==================================== */
+/* 4. Input Fields Commands */
+/* ==================================== */
+
+#loginForm input {
+    width: 90%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    
+    /* Field Style Commands */
+    border-radius: 25px; /* Soft rounded edges */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Thin white border */
+    background: rgba(255, 255, 255, 0.4); /* Slight transparent white fill */
+    color: #333;
+    outline: none;
+    transition: all var(--transition-speed) ease;
+
+    /* Staggered fade animation (using class selectors for simplicity) */
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Stagger animation delay */
+#email { animation-delay: 1.2s; }
+#password { animation-delay: 1.4s; }
+
+
+/* Glow on focus */
+#loginForm input:focus {
+    border-color: var(--royal-blue);
+    box-shadow: 0 0 10px rgba(26, 115, 232, 0.5); 
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Remove the <br><br> spacing from the HTML for better design */
+#loginForm br { display: none; }
+
+/* ==================================== */
+/* 5. Login Button Command */
+/* ==================================== */
+
+#loginForm button[type="submit"] {
+    width: 90%;
+    padding: 12px;
+    margin-top: 20px;
+    
+    /* Login Button Style */
+    background-color: var(--royal-blue); /* Royal Blue */
+    border-radius: 30px; /* Fully rounded */
+    border: none;
+    color: white; /* Bold white text */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.4); /* Slight shadow */
+
+    /* Animation: slight pop effect */
+    opacity: 0;
+    transform: scale(0.9);
+    animation: popIn 0.5s ease-out 1.6s forwards; 
+}
+
+/* Hover lift & glow */
+#loginForm button[type="submit"]:hover {
+    transform: translateY(-4px); /* Hover lift */
+    box-shadow: 0 8px 15px rgba(26, 115, 232, 0.6); /* Glow shadow */
+}
+
+/* ==================================== */
+/* 7. Bottom Navigation Command */
+/* ==================================== */
+
+#register-nav {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+#register-link {
+    color: var(--soft-purple); /* Soft purple text color */
+    text-decoration: none;
+    font-weight: bold;
+    transition: all var(--transition-speed) ease;
+}
+
+/* Underline only on hover */
+#register-link:hover {
+    text-decoration: underline;
+    /* Optional: slight color change/animation on hover */
+    color: var(--purple); 
+}
+
+
+/* ==================================== */
+/* 6. Entry Animations Keyframes */
+/* ==================================== */
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes floatShape {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(50px, -50px) rotate(360deg); }
+}
+
+@keyframes cardEntry {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInSlideDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
