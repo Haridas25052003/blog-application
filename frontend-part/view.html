@@ -8,26 +8,21 @@
 </head>
 <body>
 
-<div class="page-wrapper">
-    
-    <header id="site-header">
-        <div class="header-content">
-            <h1 class="site-title">WriteFlow<span class="logo-accent">.</span></h1>
-        </div>
-    </header>
+<header id="site-header">
+    <div class="header-content">
+        <h1 class="site-title">WriteFlow<span class="logo-accent">.</span></h1>
+    </div>
+</header>
 
+<div class="page-wrapper">
     <div class="header-nav">
-        <a href="myblogs.html" id="myPostsLink" class="nav-btn primary-btn">
-            <i class="fas fa-arrow-left"></i> My Posts
-        </a>
-        
+        <a href="myblogs.html" class="nav-btn primary-btn"><i class="fas fa-arrow-left"></i> My Posts</a>
         <button id="tocToggle" class="nav-btn toc-toggle"><i class="fas fa-list"></i> Contents</button>
-        
         <a href="blog.html" class="nav-btn secondary-btn">Public Feed <i class="fas fa-globe"></i></a>
     </div>
 
     <div class="glass-container">
-
+        
         <h1 id="blogTitle"></h1>
         
         <div class="metadata">
@@ -44,15 +39,14 @@
             </div>
         
         <div class="main-layout">
-            
             <div id="tocContainer" class="toc-card sticky-toc">
                 <h3><i class="fas fa-list-alt"></i> Table of Contents</h3>
                 <ul id="tocList">
-                </ul>
+                    </ul>
             </div>
 
             <div id="blogContent" class="main-content">
-            </div>
+                </div>
         </div>
         
         <hr class="section-divider">
@@ -70,21 +64,8 @@
     </div>
 </div>
 
-
 <script>
-// --- SECURITY & NAVIGATION CHECK ---
-const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-const myPostsLink = document.getElementById("myPostsLink");
-
-if (!currentUser) {
-    // If user is not logged in, change the "My Posts" button destination and text
-    myPostsLink.href = "blog.html"; 
-    myPostsLink.innerHTML = '<i class="fas fa-arrow-left"></i> All Public Posts';
-} 
-
-
-// --- UTILITY FUNCTIONS ---
-// Function to calculate estimated reading time
+// --- UTILITY FUNCTIONS (UNCHANGED) ---
 function calculateReadingTime(content) {
     const wordsPerMinute = 200;
     const wordCount = content.trim().split(/\s+/).length;
@@ -92,8 +73,8 @@ function calculateReadingTime(content) {
     return minutes;
 }
 
-// Function to generate avatar initials
 function getAuthorName(username) {
+    // Simple logic to get initials for the avatar
     if (!username) return 'NA';
     const parts = username.split(' ');
     if (parts.length > 1) {
@@ -104,7 +85,6 @@ function getAuthorName(username) {
 
 
 // --- MAIN FETCH LOGIC ---
-// Get the blog ID from the URL query parameters
 const id = new URLSearchParams(location.search).get("id");
 
 if (!id) {
@@ -138,7 +118,7 @@ if (!id) {
                 `;
             }
 
-            // --- TOC and Content Processing ---
+            // --- TOC and Content Processing (UNCHANGED LOGIC) ---
             let content = b.content;
             let tocHTML = '';
             let headingCount = 0;
@@ -148,7 +128,6 @@ if (!id) {
             lines.forEach(line => {
                 const trimmedLine = line.trim();
                 if (trimmedLine.length > 0) {
-                    // TOC Logic: detects short, all-caps, spaced lines as headings
                     if (trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase() && trimmedLine.indexOf(' ') > -1) {
                         headingCount++;
                         const anchorName = `section-${headingCount}`;
@@ -156,7 +135,6 @@ if (!id) {
                         tocHTML += `<li><a href="#${anchorName}" class="toc-link">${trimmedLine}</a></li>`;
                         processedLines.push(`<a name="${anchorName}"></a><h3 class="section-heading">${trimmedLine}</h3>`); 
                     } else {
-                        // Treat as a regular paragraph
                         processedLines.push(`<p>${trimmedLine}</p>`);
                     }
                 }
