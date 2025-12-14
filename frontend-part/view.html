@@ -1,108 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title id="pageTitle">View Blog</title>
-    <link rel="stylesheet" href="view.css"> 
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <title id="pageTitle">View Blog</title>
+    <link rel="stylesheet" href="view.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
 </head>
 <body>
 
 <div class="page-wrapper">
-    
-    <header id="site-header">
-        <div class="header-content">
-            <h1 class="site-title">WriteFlow<span class="logo-accent">.</span></h1>
-        </div>
-    </header>
+    
+    <header id="site-header">
+        <div class="header-content">
+            <h1 class="site-title">WriteFlow<span class="logo-accent">.</span></h1>
+        </div>
+    </header>
 
-    <div class="header-nav">
-        <a href="myblogs.html" id="myPostsLink" class="nav-btn primary-btn">
-            <i class="fas fa-arrow-left"></i> My Posts
-        </a>
-        
-        <button id="tocToggle" class="nav-btn toc-toggle"><i class="fas fa-list"></i> Contents</button>
-        
-        <a href="blog.html" class="nav-btn secondary-btn">Public Feed <i class="fas fa-globe"></i></a>
-    </div>
+    <div class="header-nav">
+        <a href="myblogs.html" id="myPostsLink" class="nav-btn primary-btn">
+            <i class="fas fa-arrow-left"></i> My Posts
+        </a>
+        
+        <button id="tocToggle" class="nav-btn toc-toggle"><i class="fas fa-list"></i> Contents</button>
+        
+        <a href="blog.html" class="nav-btn secondary-btn">Public Feed <i class="fas fa-globe"></i></a>
+    </div>
 
-    <div class="glass-container">
+    <div class="glass-container">
 
-        <h1 id="blogTitle"></h1>
-        
-        <div class="metadata">
-            <span class="meta-item author-line">
-                <i class="fas fa-user-circle"></i> By: <span id="blogAuthor"></span>
-            </span>
-            <span class="meta-separator">|</span>
-            <span class="meta-item read-time-line">
-                <i class="fas fa-clock"></i> <b><span id="readTime"></span></b>
-            </span>
-        </div>
+        <h1 id="blogTitle"></h1>
+        
+        <div class="metadata">
+            <span class="meta-item author-line">
+                <i class="fas fa-user-circle"></i> By: <span id="blogAuthor"></span>
+            </span>
+            <span class="meta-separator">|</span>
+            <span class="meta-item read-time-line">
+                <i class="fas fa-clock"></i> <b><span id="readTime"></span></b>
+            </span>
+        </div>
 
-        <div id="blogImageContainer">
-            </div>
-        
-        <div class="main-layout">
-            
-            <div id="tocContainer" class="toc-card sticky-toc">
-                <h3><i class="fas fa-list-alt"></i> Table of Contents</h3>
-                <ul id="tocList">
-                </ul>
-            </div>
+        <div id="blogImageContainer">
+            </div>
+        
+        <div class="main-layout">
+            
+            <div id="tocContainer" class="toc-card sticky-toc">
+                <h3><i class="fas fa-list-alt"></i> Table of Contents</h3>
+                <ul id="tocList">
+                </ul>
+            </div>
 
-            <div id="blogContent" class="main-content">
-            </div>
-        </div>
-        
-        <hr class="section-divider">
+            <div id="blogContent" class="main-content">
+            </div>
+        </div>
+        
+        <hr class="section-divider">
 
-        <div id="authorBio" class="author-bio-card">
-            <div class="author-header">
-                <div class="avatar-placeholder">
-                    <span id="avatarInitials">A</span>
-                </div>
-                <h4>About: <span id="authorNameFooter"></span></h4>
-            </div>
-            <p><small>This post was written by <span id="authorNameTiny"></span>, a valuable contributor to our blog application.</small></p>
-            <a href="blog.html" class="more-blogs-link"><i class="fas fa-arrow-right"></i> More blogs by this author</a>
-        </div>
-    </div>
+        <div id="authorBio" class="author-bio-card">
+            <div class="author-header">
+                <div class="avatar-placeholder">
+                    <span id="avatarInitials">A</span>
+                </div>
+                <h4>About: <span id="authorNameFooter"></span></h4>
+            </div>
+            <p><small>This post was written by <span id="authorNameTiny"></span>, a valuable contributor to our blog application.</small></p>
+            <a href="blog.html" class="more-blogs-link"><i class="fas fa-arrow-right"></i> More blogs by this author</a>
+        </div>
+    </div>
 </div>
 
 
 <script>
-// --- CRITICAL SECURITY & NAVIGATION CHECK (MUST RUN FIRST) ---
-// Using raw getItem for slightly faster check before JSON.parse
-const currentUser = localStorage.getItem("currentUser");
+// --- SECURITY & NAVIGATION CHECK ---
+const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 const myPostsLink = document.getElementById("myPostsLink");
 
 if (!currentUser) {
-    // If user is NOT logged in, HIDE the button that links to the private dashboard.
-    myPostsLink.style.display = 'none';
-} else {
-    // Ensure the button is visible for logged-in users (authors)
-    myPostsLink.style.display = 'inline-flex';
-}
-// -------------------------------------------------------------
+    // If user is not logged in, change the "My Posts" button destination and text
+    myPostsLink.href = "blog.html"; 
+    myPostsLink.innerHTML = '<i class="fas fa-arrow-left"></i> All Public Posts';
+} 
+
 
 // --- UTILITY FUNCTIONS ---
 // Function to calculate estimated reading time
 function calculateReadingTime(content) {
-    const wordsPerMinute = 200;
-    const wordCount = content.trim().split(/\s+/).length;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
-    return minutes;
+    const wordsPerMinute = 200;
+    const wordCount = content.trim().split(/\s+/).length;
+    const minutes = Math.ceil(wordCount / wordsPerMinute);
+    return minutes;
 }
 
 // Function to generate avatar initials
 function getAuthorName(username) {
-    if (!username) return 'NA';
-    const parts = username.split(' ');
-    if (parts.length > 1) {
-        return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
-    }
-    return username.substring(0, 2).toUpperCase();
+    if (!username) return 'NA';
+    const parts = username.split(' ');
+    if (parts.length > 1) {
+        return parts[0].charAt(0).toUpperCase() + parts[parts.length - 1].charAt(0).toUpperCase();
+    }
+    return username.substring(0, 2).toUpperCase();
 }
 
 
@@ -111,99 +108,99 @@ function getAuthorName(username) {
 const id = new URLSearchParams(location.search).get("id");
 
 if (!id) {
-    document.body.innerHTML = "<h2>Error: Blog ID not found.</h2>";
+    document.body.innerHTML = "<h2>Error: Blog ID not found.</h2>";
 } else {
-    fetch("http://localhost:8080/blog/" + id)
-        .then(r => r.json())
-        .then(b => {
-            // Populate Title and Metadata
-            document.getElementById("pageTitle").innerText = b.title;
-            document.getElementById("blogTitle").innerText = b.title;
-            const authorName = b.username || "Unknown Author";
-            document.getElementById("blogAuthor").innerText = authorName;
+    fetch("http://localhost:8080/blog/" + id)
+        .then(r => r.json())
+        .then(b => {
+            // Populate Title and Metadata
+            document.getElementById("pageTitle").innerText = b.title;
+            document.getElementById("blogTitle").innerText = b.title;
+            const authorName = b.username || "Unknown Author";
+            document.getElementById("blogAuthor").innerText = authorName;
 
-            // Populate Author Bio Footer
-            document.getElementById("authorNameFooter").innerText = authorName;
-            document.getElementById("authorNameTiny").innerText = authorName;
-            document.getElementById("avatarInitials").innerText = getAuthorName(authorName);
+            // Populate Author Bio Footer
+            document.getElementById("authorNameFooter").innerText = authorName;
+            document.getElementById("authorNameTiny").innerText = authorName;
+            document.getElementById("avatarInitials").innerText = getAuthorName(authorName);
 
 
-            const readingMinutes = calculateReadingTime(b.content);
-            document.getElementById("readTime").innerText = `${readingMinutes} min read`;
-            
-            // 3. Image Display
-            if (b.imageUrl) {
-                document.getElementById("blogImageContainer").innerHTML = `
-                    <div class="image-wrapper">
-                        <img src="${b.imageUrl}" alt="${b.title}" class="featured-image">
-                        <div class="image-shadow-overlay"></div>
-                    </div>
-                `;
-            }
+            const readingMinutes = calculateReadingTime(b.content);
+            document.getElementById("readTime").innerText = `${readingMinutes} min read`;
+            
+            // 3. Image Display
+            if (b.imageUrl) {
+                document.getElementById("blogImageContainer").innerHTML = `
+                    <div class="image-wrapper">
+                        <img src="${b.imageUrl}" alt="${b.title}" class="featured-image">
+                        <div class="image-shadow-overlay"></div>
+                    </div>
+                `;
+            }
 
-            // --- TOC and Content Processing ---
-            let content = b.content;
-            let tocHTML = '';
-            let headingCount = 0;
-            const lines = content.split('\n');
-            let processedLines = [];
+            // --- TOC and Content Processing ---
+            let content = b.content;
+            let tocHTML = '';
+            let headingCount = 0;
+            const lines = content.split('\n');
+            let processedLines = [];
 
-            lines.forEach(line => {
-                const trimmedLine = line.trim();
-                if (trimmedLine.length > 0) {
-                    // TOC Logic: detects short, all-caps, spaced lines as headings
-                    if (trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase() && trimmedLine.indexOf(' ') > -1) {
-                        headingCount++;
-                        const anchorName = `section-${headingCount}`;
-                        
-                        tocHTML += `<li><a href="#${anchorName}" class="toc-link">${trimmedLine}</a></li>`;
-                        processedLines.push(`<a name="${anchorName}"></a><h3 class="section-heading">${trimmedLine}</h3>`); 
-                    } else {
-                        // Treat as a regular paragraph
-                        processedLines.push(`<p>${trimmedLine}</p>`);
-                    }
-                }
-            });
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine.length > 0) {
+                    // TOC Logic: detects short, all-caps, spaced lines as headings
+                    if (trimmedLine.length < 50 && trimmedLine === trimmedLine.toUpperCase() && trimmedLine.indexOf(' ') > -1) {
+                        headingCount++;
+                        const anchorName = `section-${headingCount}`;
+                        
+                        tocHTML += `<li><a href="#${anchorName}" class="toc-link">${trimmedLine}</a></li>`;
+                        processedLines.push(`<a name="${anchorName}"></a><h3 class="section-heading">${trimmedLine}</h3>`); 
+                    } else {
+                        // Treat as a regular paragraph
+                        processedLines.push(`<p>${trimmedLine}</p>`);
+                    }
+                }
+            });
 
-            document.getElementById("blogContent").innerHTML = processedLines.join('');
-            document.getElementById("tocList").innerHTML = tocHTML;
-            
-            if (headingCount === 0) {
-                document.getElementById("tocContainer").style.display = 'none'; 
-                document.getElementById("tocToggle").style.display = 'none';
-            }
+            document.getElementById("blogContent").innerHTML = processedLines.join('');
+            document.getElementById("tocList").innerHTML = tocHTML;
+            
+            if (headingCount === 0) {
+                document.getElementById("tocContainer").style.display = 'none'; 
+                document.getElementById("tocToggle").style.display = 'none';
+            }
 
-            // --- INTERACTIVE SCRIPTS ---
+            // --- INTERACTIVE SCRIPTS ---
 
-            // Smooth Scroll for TOC links
-            document.querySelectorAll('.toc-link').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
+            // Smooth Scroll for TOC links
+            document.querySelectorAll('.toc-link').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
 
-            // TOC Toggle for Mobile
-            document.getElementById('tocToggle').addEventListener('click', function() {
-                const toc = document.getElementById('tocContainer');
-                const isHidden = toc.classList.contains('hidden-mobile');
-                if (isHidden) {
-                    toc.classList.remove('hidden-mobile');
-                    this.innerHTML = '<i class="fas fa-times"></i> Close Contents';
-                } else {
-                    toc.classList.add('hidden-mobile');
-                    this.innerHTML = '<i class="fas fa-list"></i> Contents';
-                }
-            });
+            // TOC Toggle for Mobile
+            document.getElementById('tocToggle').addEventListener('click', function() {
+                const toc = document.getElementById('tocContainer');
+                const isHidden = toc.classList.contains('hidden-mobile');
+                if (isHidden) {
+                    toc.classList.remove('hidden-mobile');
+                    this.innerHTML = '<i class="fas fa-times"></i> Close Contents';
+                } else {
+                    toc.classList.add('hidden-mobile');
+                    this.innerHTML = '<i class="fas fa-list"></i> Contents';
+                }
+            });
 
-        })
-        .catch(err => {
-            document.getElementById("blogTitle").innerText = "Error loading blog.";
-            document.getElementById("blogContent").innerHTML = "<p class='error-message'>Could not fetch blog content. Please check the ID and server connection.</p>";
-            console.error(err);
-        });
+        })
+        .catch(err => {
+            document.getElementById("blogTitle").innerText = "Error loading blog.";
+            document.getElementById("blogContent").innerHTML = "<p class='error-message'>Could not fetch blog content. Please check the ID and server connection.</p>";
+            console.error(err);
+        });
 }
 </script>
 
