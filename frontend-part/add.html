@@ -1,119 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Blog</title>
-    <link rel="stylesheet" href="add.css"> 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Add Blog</title>
+    <link rel="stylesheet" href="add.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
 <div id="page-wrapper">
-    
-    <h1 id="page-title">🌟 WriteFlow – Create a New Blog</h1> 
+    
+    <h1 id="page-title">🌟 WriteFlow – Create a New Blog</h1> 
 
-    <div id="blog-card">
-        
-        <h2 class="card-header">Create a New Blog Post</h2>
-        
-        <div class="form-grid">
-            
-            <div class="main-content-section">
-                
-                <input id="title" placeholder="Blog Title (Max 80 characters)">
-                
-                <textarea id="content" placeholder="Write your content here..."></textarea>
-                
-                <div class="actions-footer">
-                    <button onclick="add()" class="publish-btn">
-                        <i class="fas fa-rocket"></i> Publish Blog
-                    </button>
+    <div id="blog-card">
+        
+        <h2 class="card-header">Create a New Blog Post</h2>
+        
+        <div class="form-grid">
+            
+            <div class="main-content-section">
+                
+                <input id="title" placeholder="Blog Title (Max 80 characters)">
+                
+                <textarea id="content" placeholder="Write your content here..."></textarea>
+                
+                <div class="actions-footer">
+                    <button onclick="add()" class="publish-btn">
+                        <i class="fas fa-rocket"></i> Publish Blog
+                    </button>
 
-                    <a href="myblogs.html" class="cancel-link">
-                        <i class="fas fa-arrow-left"></i> Cancel and Go Back
-                    </a>
-                </div>
-            </div>
+                    <a href="myblogs.html" class="cancel-link">
+                        <i class="fas fa-arrow-left"></i> Cancel and Go Back
+                    </a>
+                </div>
+            </div>
 
-            <div class="image-upload-section">
-                <label for="imageFile" class="image-upload-box" id="upload-area">
-                    <div id="upload-box-placeholder">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Click to upload or drag & drop</p>
-                        <p class="recommended-size">1200 × 800 recommended</p>
-                    </div>
-                    
-                    <input type="file" id="imageFile" accept="image/*" style="display: none;">
-                    
-                    <img id="image-preview" src="#" alt="Image Preview" style="display: none;">
-                </label>
-                
-                <p id="msg" class="validation-msg"></p>
-                
-            </div>
-        </div>
-    </div>
+            <div class="image-upload-section">
+                <label for="imageFile" class="image-upload-box" id="upload-area">
+                    <div id="upload-box-placeholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload or drag & drop</p>
+                        <p class="recommended-size">1200 × 800 recommended</p>
+                    </div>
+                    
+                    <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                    
+                    <img id="image-preview" src="#" alt="Image Preview" style="display: none;">
+                </label>
+                
+                <p id="msg" class="validation-msg"></p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-// ALL JAVASCRIPT LOGIC IS UNCHANGED
+// --- CRITICAL SECURITY CHECK (P2) ---
+const userId = localStorage.getItem("userId");
+if (!userId) {
+    alert("You must be logged in to create a new blog post.");
+    window.location.href = "login.html"; 
+}
+// --- END SECURITY CHECK ---
+
 let base64Image = "";
 
 document.getElementById('imageFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const previewImg = document.getElementById('image-preview');
-    const placeholder = document.getElementById('upload-box-placeholder');
-    
-    if (file) {
-        document.getElementById("msg").innerText = ""; 
-        
-        const reader = new FileReader();
-        reader.onloadend = function() {
-            base64Image = reader.result;
-            previewImg.src = base64Image;
-            previewImg.style.display = 'block';
-            placeholder.style.display = 'none'; 
-            console.log("Image successfully converted to Base64.");
-        }
-        reader.readAsDataURL(file); 
-    } else {
-        base64Image = "";
-        previewImg.style.display = 'none';
-        placeholder.style.display = 'flex';
-    }
+    const file = e.target.files[0];
+    const previewImg = document.getElementById('image-preview');
+    const placeholder = document.getElementById('upload-box-placeholder');
+    
+    if (file) {
+        document.getElementById("msg").innerText = ""; 
+        
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            base64Image = reader.result;
+            previewImg.src = base64Image;
+            previewImg.style.display = 'block';
+            placeholder.style.display = 'none'; 
+            console.log("Image successfully converted to Base64.");
+        }
+        reader.readAsDataURL(file); 
+    } else {
+        base64Image = "";
+        previewImg.style.display = 'none';
+        placeholder.style.display = 'flex';
+    }
 });
 
 function add(){
-    if (base64Image === "") {
-        document.getElementById("msg").innerText = "Please upload a featured image.";
-        document.getElementById("msg").style.color = "var(--danger-color)";
-        return;
-    }
-    
-    fetch("http://localhost:8080/blog/add",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            title:title.value,
-            imageUrl: base64Image,
-            content:content.value,
-            userId:localStorage.getItem("userId"),
-            username:localStorage.getItem("username")
-        })
-    })
-    .then(r=>r.text())
-    .then(msg=>{
-        if (msg.toLowerCase().includes("success")) {
-             document.getElementById("msg").style.color = "var(--primary-color)";
-        } else {
-             document.getElementById("msg").style.color = "var(--danger-color)";
-        }
-        document.getElementById("msg").innerText=msg;
-        
-        if (msg.toLowerCase().includes("success")) {
-            setTimeout(()=>location.href="myblogs.html",1000);
-        }
-    });
+    if (base64Image === "") {
+        document.getElementById("msg").innerText = "Please upload a featured image.";
+        document.getElementById("msg").style.color = "var(--danger-color)";
+        return;
+    }
+    
+    fetch("http://localhost:8080/blog/add",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            title:title.value,
+            imageUrl: base64Image,
+            content:content.value,
+            userId:localStorage.getItem("userId"),
+            username:localStorage.getItem("username")
+        })
+    })
+    .then(r=>r.text())
+    .then(msg=>{
+        if (msg.toLowerCase().includes("success")) {
+             document.getElementById("msg").style.color = "var(--primary-color)";
+        } else {
+             document.getElementById("msg").style.color = "var(--danger-color)";
+        }
+        document.getElementById("msg").innerText=msg;
+        
+        if (msg.toLowerCase().includes("success")) {
+            setTimeout(()=>location.href="myblogs.html",1000);
+        }
+    });
 }
 </script>
 
