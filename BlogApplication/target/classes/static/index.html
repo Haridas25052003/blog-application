@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BlogSphere — Explore Stories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg:        #0d0d0d;
+            --surface:   #161616;
+            --surface2:  #1f1f1f;
+            --border:    #2a2a2a;
+            --accent:    #e8c547;
+            --accent2:   #c9a227;
+            --text:      #f0ece0;
+            --muted:     #888;
+            --danger:    #e05555;
+            --radius:    12px;
+            --nav-h:     68px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+        }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            height: var(--nav-h);
+            background: rgba(13,13,13,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 5%;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0d0d0d;
+        }
+        .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            font-size: 0.8rem;
+            padding: 6px 14px;
+        }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 80px 5% 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(232,197,71,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(232,197,71,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(232,197,71,0.3);
+            border-radius: 100px;
+            padding: 4px 14px;
+            font-size: 0.78rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 480px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-wrap {
+            max-width: 480px;
+            margin: 0 auto 60px;
+            position: relative;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 14px 50px 14px 22px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-wrap input:focus { border-color: var(--accent); }
+        .search-wrap input::placeholder { color: var(--muted); }
+
+        .search-icon {
+            position: absolute; right: 18px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted); font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        /* ===== SECTION ===== */
+        .section { padding: 0 5% 80px; }
+
+        .section-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+        }
+
+        .blog-count {
+            font-size: 0.85rem;
+            color: var(--muted);
+            background: var(--surface2);
+            padding: 4px 12px;
+            border-radius: 100px;
+        }
+
+        /* ===== GRID ===== */
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        /* ===== CARD ===== */
+        .blog-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            cursor: pointer;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(232,197,71,0.4);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-image {
+            width: 100%; height: 200px;
+            object-fit: cover;
+            display: block;
+            background: var(--surface2);
+        }
+
+        .card-image-placeholder {
+            width: 100%; height: 200px;
+            background: linear-gradient(135deg, var(--surface2), var(--border));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .card-body { padding: 22px; }
+
+        .card-meta {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-author {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #0d0d0d;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .author-name {
+            font-size: 0.82rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .card-date {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .card-excerpt {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.65;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            padding: 14px 22px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between;
+        }
+
+        .read-more {
+            font-size: 0.82rem;
+            color: var(--accent);
+            font-weight: 500;
+            text-decoration: none;
+            display: flex; align-items: center; gap: 4px;
+            transition: gap 0.2s;
+        }
+        .read-more:hover { gap: 8px; }
+
+        /* Admin delete button on card */
+        .card-admin-actions { display: flex; gap: 8px; }
+
+        /* ===== EMPTY / LOADING ===== */
+        .state-box {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+
+        .state-box .icon { font-size: 3rem; margin-bottom: 16px; }
+        .state-box p { font-size: 1rem; }
+
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== TOAST ===== */
+        #toast {
+            position: fixed; bottom: 28px; right: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 0.88rem;
+            color: var(--text);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 999;
+            max-width: 300px;
+        }
+
+        #toast.show { transform: translateY(0); opacity: 1; }
+        #toast.success { border-color: var(--accent); color: var(--accent); }
+        #toast.error   { border-color: var(--danger); color: var(--danger); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 5%;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        footer span { color: var(--accent); }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width: 600px) {
+            .nav-links .hide-mobile { display: none; }
+            .blogs-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+    <a href="index.html" class="nav-brand">BlogSphere</a>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <!-- Shown when logged in -->
+        <a href="my-blogs.html" class="hide-mobile" id="myBlogsLink" style="display:none">My Blogs</a>
+        <a href="add-blog.html" class="hide-mobile" id="addBlogLink" style="display:none">Write</a>
+        <a href="admin.html"    class="hide-mobile" id="adminLink"   style="display:none">Admin</a>
+        <!-- Guest links -->
+        <a href="login.html"    id="loginLink">Login</a>
+        <a href="register.html" class="btn btn-primary" id="registerLink">Get Started</a>
+        <!-- Logged in links -->
+        <span id="userGreet" style="display:none; color:var(--muted); font-size:0.88rem;"></span>
+        <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-tag">✦ Open Platform</div>
+    <h1>Where <em>Ideas</em><br/>Find Their Voice</h1>
+    <p>Discover stories, thoughts, and expertise from writers on any topic.</p>
+    <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Search blogs by title..." oninput="filterBlogs()"/>
+        <span class="search-icon">⌕</span>
+    </div>
+</section>
+
+<!-- ===== BLOG LIST ===== -->
+<section class="section">
+    <div class="section-header">
+        <h2 class="section-title">Latest Stories</h2>
+        <span class="blog-count" id="blogCount">Loading...</span>
+    </div>
+    <div class="blogs-grid" id="blogsGrid">
+        <div class="state-box" style="grid-column:1/-1">
+            <div class="spinner"></div>
+            <p>Fetching stories...</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <p>Built with <span>♥</span> on Spring Boot &amp; Vanilla JS &nbsp;·&nbsp; BlogSphere © 2024</p>
+</footer>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"></div>
+
+<script>
+    const BASE = 'http://localhost:8080';
+    let allBlogs = [];
+    let currentUser = null;
+
+    // ── Init ──
+    window.addEventListener('DOMContentLoaded', () => {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+        updateNav();
+        fetchBlogs();
+    });
+
+    // ── Nav ──
+    function updateNav() {
+        const loggedIn = !!currentUser;
+        document.getElementById('loginLink').style.display    = loggedIn ? 'none' : '';
+        document.getElementById('registerLink').style.display = loggedIn ? 'none' : '';
+        document.getElementById('myBlogsLink').style.display  = loggedIn ? '' : 'none';
+        document.getElementById('addBlogLink').style.display  = loggedIn ? '' : 'none';
+        document.getElementById('logoutBtn').style.display    = loggedIn ? '' : 'none';
+        document.getElementById('userGreet').style.display    = loggedIn ? '' : 'none';
+
+        if (loggedIn) {
+            document.getElementById('userGreet').textContent = `Hi, ${currentUser.username}`;
+            if (currentUser.role === 'ADMIN') {
+                document.getElementById('adminLink').style.display = '';
+            }
+        }
+    }
+
+    // ── Fetch Blogs ──
+    async function fetchBlogs() {
+        try {
+            const res  = await fetch(`${BASE}/api/blogs`);
+            const data = await res.json();
+
+            if (data.success) {
+                allBlogs = data.data;
+                renderBlogs(allBlogs);
+            } else {
+                showEmpty('Could not load blogs.');
+            }
+        } catch (err) {
+            showEmpty('Server not reachable. Make sure Spring Boot is running.');
+        }
+    }
+
+    // ── Render ──
+    function renderBlogs(blogs) {
+        const grid  = document.getElementById('blogsGrid');
+        const count = document.getElementById('blogCount');
+
+        count.textContent = `${blogs.length} ${blogs.length === 1 ? 'story' : 'stories'}`;
+
+        if (!blogs.length) {
+            showEmpty('No blogs found. Be the first to write!');
+            return;
+        }
+
+        grid.innerHTML = blogs.map((b, i) => `
+            <article class="blog-card" style="animation-delay:${i * 0.06}s"
+                     onclick="goToBlog(${b.id})">
+                ${b.imageUrl
+                    ? `<img class="card-image" src="${b.imageUrl}" alt="${b.title}" onerror="this.style.display='none'">`
+                    : `<div class="card-image-placeholder">✍</div>`
+                }
+                <div class="card-body">
+                    <div class="card-meta">
+                        <div class="card-author">
+                            <div class="avatar">${b.username ? b.username[0].toUpperCase() : '?'}</div>
+                            <span class="author-name">${b.username || 'Unknown'}</span>
+                        </div>
+                        <span class="card-date">${formatDate(b.createdAt)}</span>
+                    </div>
+                    <h3 class="card-title">${b.title}</h3>
+                    <p class="card-excerpt">${b.content}</p>
+                </div>
+                <div class="card-footer">
+                    <a class="read-more" href="blog.html?id=${b.id}" onclick="event.stopPropagation()">
+                        Read more →
+                    </a>
+                    ${isAdminOrOwner(b) ? `
+                    <div class="card-admin-actions" onclick="event.stopPropagation()">
+                        <button class="btn btn-danger"
+                            onclick="deleteBlog(${b.id})">Delete</button>
+                    </div>` : ''}
+                </div>
+            </article>
+        `).join('');
+    }
+
+    // ── Filter ──
+    function filterBlogs() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allBlogs.filter(b =>
+            b.title.toLowerCase().includes(q) ||
+            (b.username && b.username.toLowerCase().includes(q))
+        );
+        renderBlogs(filtered);
+    }
+
+    // ── Navigate ──
+    function goToBlog(id) {
+        window.location.href = `blog.html?id=${id}`;
+    }
+
+    // ── Delete Blog ──
+    async function deleteBlog(blogId) {
+        if (!confirm('Delete this blog?')) return;
+
+        const isAdmin = currentUser?.role === 'ADMIN';
+        const url     = isAdmin
+            ? `${BASE}/api/admin/blog/delete/${blogId}`
+            : `${BASE}/api/blogs/delete/${blogId}`;
+        const header  = isAdmin ? 'X-Admin-Id' : 'X-User-Id';
+
+        try {
+            const res  = await fetch(url, {
+                method: 'DELETE',
+                headers: { [header]: currentUser.id }
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showToast('Blog deleted successfully', 'success');
+                fetchBlogs();
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch {
+            showToast('Delete failed', 'error');
+        }
+    }
+
+    // ── Helpers ──
+    function isAdminOrOwner(blog) {
+        if (!currentUser) return false;
+        return currentUser.role === 'ADMIN' || currentUser.id === blog.userId;
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function showEmpty(msg) {
+        document.getElementById('blogsGrid').innerHTML = `
+            <div class="state-box" style="grid-column:1/-1">
+                <div class="icon">✦</div>
+                <p>${msg}</p>
+            </div>`;
+        document.getElementById('blogCount').textContent = '0 stories';
+    }
+
+    function logout() {
+        localStorage.removeItem('user');
+        showToast('Logged out successfully', 'success');
+        setTimeout(() => location.reload(), 800);
+    }
+
+    function showToast(msg, type = '') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className   = `show ${type}`;
+        setTimeout(() => t.className = '', 3000);
+    }
+</script>
+</body>
+</html>
